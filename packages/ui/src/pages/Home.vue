@@ -6,7 +6,7 @@
         <h2>buy and sell crypto automatically, at the best rates</h2>
       </div>
       <div
-        v-if="!account.address || account.status.value === 'disconnected'"
+        v-if="!account.address.value || account.status.value === 'disconnected'"
         class="connect-prompt"
       >
         <div
@@ -37,8 +37,15 @@
       </div>
       <div v-else>
         <h2>Balance</h2>
-        <p>{{ ethBalance }} ETH</p>
-        <p>{{ usdcBalance }} USDC</p>
+        <div>
+          <span v-if="ethBalance !== null">{{ ethBalance }}</span>
+          <span v-else>???</span> ETH
+        </div>
+        <div>
+          <span v-if="usdcBalance !== null">{{ usdcBalance }}</span>
+          <span v-else>???</span>
+          USDC
+        </div>
       </div>
     </div>
   </div>
