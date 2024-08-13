@@ -1,8 +1,24 @@
 <template>
   <div id="app">
+    <AppHeader />
     <router-view />
   </div>
 </template>
+
+<script setup>
+import { createWeb3Modal } from '@web3modal/wagmi';
+
+import { projectId } from '@/appKit';
+import AppHeader from '@/components/_app/AppHeader.vue';
+import { config } from '@/wagmi';
+
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  enableOnramp: true, // Optional - false as default
+});
+</script>
 
 <style>
 :root {
@@ -17,6 +33,7 @@
 }
 
 body {
+  margin: 0;
   font-family: var(--font-sans);
 }
 
