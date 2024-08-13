@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.51.21",
+    "@vueuse/core": "^10.11.1",
     "@wagmi/vue": "^0.0.37",
     "@web3modal/wagmi": "^5.0.11",
     "viem": "^2.19.4",
