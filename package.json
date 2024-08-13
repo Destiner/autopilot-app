@@ -1,7 +1,15 @@
 {
-  "name": "autopilot",
+  "name": "autopilot-app",
+  "author": {
+    "name": "Timur Badretdinov",
+    "url": "https://github.com/Destiner"
+  },
   "module": "index.ts",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Destiner/autopilot-app.git"
+  },
   "workspaces": [
     "packages/*"
   ],
