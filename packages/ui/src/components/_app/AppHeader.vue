@@ -9,7 +9,6 @@
 header {
   display: flex;
   justify-content: space-between;
-  height: 48px;
-  padding: 4px 16px;
+  padding: 8px 16px;
 }
 </style>
