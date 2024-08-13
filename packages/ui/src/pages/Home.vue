@@ -6,7 +6,7 @@
         <h2>buy and sell crypto automatically, at the best rates</h2>
       </div>
       <div
-        v-if="!account.address"
+        v-if="!account.address || account.status.value === 'disconnected'"
         class="connect-prompt"
       >
         <div
@@ -16,6 +16,12 @@
           Connect
         </div>
         to get started
+      </div>
+      <div
+        v-else-if="!hasBalance"
+        class="fund-prompt"
+      >
+        Fetching your balance…
       </div>
       <div
         v-else-if="isEmpty"
@@ -30,45 +36,87 @@
         to make your first swap
       </div>
       <div v-else>
-        <h2>ETH Balance</h2>
-        <p>{{ ethBalance.data.value.value / 1e18 }} ETH</p>
-        <p>{{ usdcBalance.data / 1e6 }} USDC</p>
+        <h2>Balance</h2>
+        <p>{{ ethBalance }} ETH</p>
+        <p>{{ usdcBalance }} USDC</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAccount, useBalance, useReadContract } from '@wagmi/vue';
-import { computed, watchEffect } from 'vue';
+import { useIntervalFn } from '@vueuse/core';
+import { useAccount, useClient } from '@wagmi/vue';
+import { Address } from 'viem';
+import { readContract, getBalance } from 'viem/actions';
+import { computed, ref, watch } from 'vue';
 
 import erc20Abi from '@/abi/erc20.js';
 
 const account = useAccount();
+const client = useClient();
 
-const USDC = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
+const USDC: Address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
 
-const ethBalance = useBalance({
-  address: account.address,
-});
-const usdcBalance = useReadContract({
-  abi: erc20Abi,
-  address: USDC,
-  functionName: 'balanceOf',
-  args: [account.address],
-});
+function open(): void {
+  console.log('open modal');
+}
+
+const ethBalance = ref<bigint | null>(null);
+const usdcBalance = ref<bigint | null>(null);
+const hasBalance = computed(
+  () => ethBalance.value !== null && usdcBalance.value !== null,
+);
+
+async function fetchEthBalance(): Promise<void> {
+  const address = account.address.value;
+  if (!address) {
+    return;
+  }
+  if (!client.value) {
+    return;
+  }
+  const balance = await getBalance(client.value, {
+    address,
+  });
+  ethBalance.value = balance;
+}
+
+async function fetchUsdcBalance(): Promise<void> {
+  const address = account.address.value;
+  if (!address) {
+    return;
+  }
+  if (!client.value) {
+    return;
+  }
+  const balance = await readContract(client.value, {
+    abi: erc20Abi,
+    address: USDC,
+    functionName: 'balanceOf',
+    args: [address],
+  });
+  usdcBalance.value = balance;
+}
 
 const isEmpty = computed(() => {
-  const hasEth = ethBalance.data.value.value > 0n;
-  const hasUsdc = usdcBalance.data > 0n;
+  if (ethBalance.value === null || usdcBalance.value === null) {
+    return true;
+  }
+  const hasEth = ethBalance.value > 0n;
+  const hasUsdc = usdcBalance.value > 0n;
   return !hasEth && !hasUsdc;
 });
 
-watchEffect(() => {
-  if (account.address) {
-    console.log('Connected:', account.address);
-  }
+watch(account.address, () => {
+  fetchEthBalance();
+  fetchUsdcBalance();
 });
+
+useIntervalFn(() => {
+  fetchEthBalance();
+  fetchUsdcBalance();
+}, 5 * 1000);
 </script>
 
 <style scoped>
