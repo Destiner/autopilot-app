@@ -10,15 +10,7 @@ const config = defaultWagmiConfig({
   metadata,
   auth: {
     email: true,
-    socials: [
-      'google',
-      'x',
-      'github',
-      'discord',
-      'apple',
-      'facebook',
-      'farcaster',
-    ],
+    socials: ['x', 'farcaster'],
     showWallets: true,
     walletFeatures: true, // default to true
   },
