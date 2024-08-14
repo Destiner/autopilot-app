@@ -20,7 +20,7 @@
         </div>
       </div>
       <div
-        v-if="account.status.value === 'connecting'"
+        v-else-if="account.status.value === 'connecting'"
         class="prompt"
       >
         <div class="prompt-header">Connecting…</div>
@@ -90,17 +90,64 @@
           />
         </div>
       </div>
-      <div v-else>
-        <h2>Balance</h2>
-        <div>
-          <span v-if="ethBalance !== null">{{ ethBalance }}</span>
-          <span v-else>???</span> ETH
+      <div
+        v-else-if="swapType === null"
+        class="swap-select-view"
+      >
+        <h2>Choose a swap type</h2>
+        <div class="swap-cards">
+          <div
+            class="card"
+            @click="swapType = 'instant'"
+          >
+            <div class="card-title">Instant</div>
+            <div class="card-description">
+              Make a regular swap that will execute immediately
+            </div>
+          </div>
+          <div
+            class="card"
+            @click="swapType = 'gradual'"
+          >
+            <div class="card-title">Gradual</div>
+            <div class="card-description">
+              Create a swap order that will execute regularly
+            </div>
+          </div>
         </div>
-        <div>
-          <span v-if="usdcBalance !== null">{{ usdcBalance }}</span>
-          <span v-else>???</span>
-          USDC
+      </div>
+      <div
+        v-else-if="swapType === 'instant'"
+        class="swap-view"
+      >
+        <h2>Instant Swap</h2>
+        <div class="prompt">
+          <div class="prompt-header">
+            <div
+              class="button button-swap"
+              @click="open"
+            >
+              Swap
+            </div>
+            with your wallet
+          </div>
+          <div class="prompt-guide">
+            <video
+              src="/assets/guides/wallet_swaps.mp4"
+              autoplay
+              loop
+            />
+          </div>
         </div>
+        <button @click="swapType = null">Go back</button>
+      </div>
+      <div
+        v-else-if="swapType === 'gradual'"
+        class="swap-view"
+      >
+        <h2>Gradual Swap</h2>
+        TODO
+        <button @click="swapType = null">Go back</button>
       </div>
     </div>
   </div>
@@ -118,6 +165,8 @@ import { computed, ref, watch } from 'vue';
 import erc20Abi from '@/abi/erc20.js';
 import { projectId } from '@/appKit';
 import { config } from '@/wagmi';
+
+type SwapType = 'instant' | 'gradual';
 
 createWeb3Modal({
   wagmiConfig: config,
@@ -239,6 +288,8 @@ useIntervalFn(() => {
   fetchEthBalance();
   fetchUsdcBalance();
 }, 5 * 1000);
+
+const swapType = ref<SwapType | null>(null);
 </script>
 
 <style scoped>
@@ -254,7 +305,7 @@ useIntervalFn(() => {
   min-width: 640px;
   max-width: 640px;
   margin-top: 120px;
-  gap: 32px;
+  gap: 64px;
 }
 
 .header {
@@ -312,5 +363,54 @@ h2 {
 .button-account {
   border-color: #270005;
   color: #270005;
+}
+
+.swap-cards {
+  display: flex;
+  gap: 32px;
+}
+
+.card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 320px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  border: 2px solid rgb(189 0 189);
+  border-radius: 16px;
+  cursor: pointer;
+
+  & .card-title {
+    color: #0a0a0a;
+    font-size: 1.5rem;
+    font-weight: 200;
+  }
+
+  & .card-description {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  &:hover {
+    background: rgb(189 0 189);
+
+    & .card-title {
+      color: #fafafa;
+    }
+
+    & .card-description {
+      color: #e2e2e2;
+    }
+  }
+}
+
+.swap-select-view,
+.swap-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 </style>
