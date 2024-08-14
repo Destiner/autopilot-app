@@ -12,7 +12,7 @@ const config = defaultWagmiConfig({
     email: true,
     socials: ['x', 'farcaster'],
     showWallets: true,
-    walletFeatures: true, // default to true
+    walletFeatures: true,
   },
 });
 
