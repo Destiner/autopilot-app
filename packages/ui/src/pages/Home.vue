@@ -9,55 +9,80 @@
         v-if="!account.address.value || account.status.value === 'disconnected'"
         class="prompt"
       >
-        <div
-          class="button button-connect"
-          @click="open"
-        >
-          Connect
+        <div class="prompt-header">
+          <div
+            class="button button-connect"
+            @click="open"
+          >
+            Connect
+          </div>
+          to get started
         </div>
-        to get started
       </div>
       <div
         v-else-if="wrongChain"
         class="prompt"
       >
-        <div
-          class="button button-chain"
-          @click="switchChain"
-        >
-          Switch to Optimism
+        <div class="prompt-header">
+          <div
+            class="button button-chain"
+            @click="switchChain"
+          >
+            Switch to Optimism
+          </div>
+          to continue
         </div>
-        to continue
       </div>
       <div
         v-else-if="isEoa"
         class="prompt"
       >
-        <div
-          class="button button-account"
-          @click="open"
-        >
-          Switch to smart account
+        <div class="prompt-header">
+          <div
+            class="button button-account"
+            @click="open"
+          >
+            Switch to smart account
+          </div>
+          to continue
         </div>
-        to continue
+        <div>
+          <button @click="markAsSmartAccount">Complete</button>
+        </div>
+        <div class="prompt-guide">
+          <video
+            src="/assets/guides/wallet_smart_account.mp4"
+            autoplay
+            loop
+          />
+        </div>
       </div>
       <div
         v-else-if="!hasBalance"
         class="prompt"
       >
-        Fetching your balance…
+        <div class="prompt-header">Fetching your balance…</div>
       </div>
       <div
         v-else-if="isEmpty"
-        class="fund-prompt"
+        class="prompt"
       >
-        <div
-          class="button button-buy"
-          @click="open"
-        >
-          Buy some crypto
+        <div class="prompt-header">
+          <div
+            class="button button-buy"
+            @click="open"
+          >
+            Buy some crypto
+          </div>
+          to make your first swap
         </div>
-        to make your first swap
+        <div class="prompt-guide">
+          <video
+            src="/assets/guides/wallet_onramp.mp4"
+            autoplay
+            loop
+          />
+        </div>
       </div>
       <div v-else>
         <h2>Balance</h2>
@@ -123,12 +148,20 @@ const wrongChain = computed(() => {
 });
 
 const addressCode = ref<Hex | null>(null);
+const markedAsSmartAccount = ref<boolean>(false);
 const isEoa = computed(() => {
+  if (markedAsSmartAccount.value) {
+    return false;
+  }
   if (!addressCode.value) {
     return true;
   }
   return size(addressCode.value) === 0;
 });
+
+function markAsSmartAccount(): void {
+  markedAsSmartAccount.value = true;
+}
 
 async function fetchCode(): Promise<void> {
   const address = account.address.value;
@@ -212,6 +245,7 @@ useIntervalFn(() => {
 .content {
   display: flex;
   flex-direction: column;
+  min-width: 640px;
   max-width: 640px;
   margin-top: 120px;
   gap: 32px;
@@ -236,6 +270,12 @@ h2 {
 }
 
 .prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.prompt-header {
   display: flex;
   gap: 8px;
   align-items: center;
