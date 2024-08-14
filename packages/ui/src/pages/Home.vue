@@ -81,6 +81,7 @@ createWeb3Modal({
   projectId,
   enableAnalytics: true,
   enableOnramp: true,
+  enableSwaps: true,
 });
 
 const { open: openModal } = useWeb3Modal();

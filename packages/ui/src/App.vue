@@ -15,8 +15,9 @@ import { config } from '@/wagmi';
 createWeb3Modal({
   wagmiConfig: config,
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true, // Optional - false as default
+  enableAnalytics: true,
+  enableOnramp: true,
+  enableSwaps: true,
 });
 </script>
 
