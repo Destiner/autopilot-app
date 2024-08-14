@@ -7,7 +7,7 @@
       </div>
       <div
         v-if="!account.address.value || account.status.value === 'disconnected'"
-        class="connect-prompt"
+        class="prompt"
       >
         <div
           class="button button-connect"
@@ -19,7 +19,7 @@
       </div>
       <div
         v-else-if="wrongChain"
-        class="chain-prompt"
+        class="prompt"
       >
         <div
           class="button button-chain"
@@ -30,8 +30,20 @@
         to continue
       </div>
       <div
+        v-else-if="isEoa"
+        class="prompt"
+      >
+        <div
+          class="button button-account"
+          @click="open"
+        >
+          Switch to smart account
+        </div>
+        to continue
+      </div>
+      <div
         v-else-if="!hasBalance"
-        class="fund-prompt"
+        class="prompt"
       >
         Fetching your balance…
       </div>
@@ -67,8 +79,8 @@
 import { useIntervalFn } from '@vueuse/core';
 import { useAccount, useClient, useSwitchChain } from '@wagmi/vue';
 import { createWeb3Modal, useWeb3Modal } from '@web3modal/wagmi/vue';
-import { Address } from 'viem';
-import { readContract, getBalance } from 'viem/actions';
+import { Address, Hex, size } from 'viem';
+import { readContract, getBalance, getCode } from 'viem/actions';
 import { optimism } from 'viem/chains';
 import { computed, ref, watch } from 'vue';
 
@@ -109,6 +121,28 @@ const wrongChain = computed(() => {
   }
   return account.chainId.value !== optimism.id;
 });
+
+const addressCode = ref<Hex | null>(null);
+const isEoa = computed(() => {
+  if (!addressCode.value) {
+    return true;
+  }
+  return size(addressCode.value) === 0;
+});
+
+async function fetchCode(): Promise<void> {
+  const address = account.address.value;
+  if (!address) {
+    return;
+  }
+  if (!client.value) {
+    return;
+  }
+  const code = await getCode(client.value, {
+    address,
+  });
+  addressCode.value = code || null;
+}
 
 const ethBalance = ref<bigint | null>(null);
 const usdcBalance = ref<bigint | null>(null);
@@ -157,6 +191,7 @@ const isEmpty = computed(() => {
 });
 
 watch(account.address, () => {
+  fetchCode();
   fetchEthBalance();
   fetchUsdcBalance();
 });
@@ -200,9 +235,7 @@ h2 {
   font-weight: 400;
 }
 
-.chain-prompt,
-.fund-prompt,
-.connect-prompt {
+.prompt {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -228,5 +261,10 @@ h2 {
 .button-buy {
   border-color: #25d962;
   color: #25d962;
+}
+
+.button-account {
+  border-color: #270005;
+  color: #270005;
 }
 </style>
