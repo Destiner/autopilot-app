@@ -20,6 +20,12 @@
         </div>
       </div>
       <div
+        v-if="account.status.value === 'connecting'"
+        class="prompt"
+      >
+        <div class="prompt-header">Connecting…</div>
+      </div>
+      <div
         v-else-if="wrongChain"
         class="prompt"
       >
