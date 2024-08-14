@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <AppHeader />
     <router-view />
   </div>
 </template>
@@ -9,7 +8,6 @@
 import { createWeb3Modal } from '@web3modal/wagmi';
 
 import { projectId } from '@/appKit';
-import AppHeader from '@/components/_app/AppHeader.vue';
 import { config } from '@/wagmi';
 
 createWeb3Modal({
