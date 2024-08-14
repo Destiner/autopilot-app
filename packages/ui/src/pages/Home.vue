@@ -18,6 +18,18 @@
         to get started
       </div>
       <div
+        v-else-if="wrongChain"
+        class="chain-prompt"
+      >
+        <div
+          class="button button-chain"
+          @click="switchChain"
+        >
+          Switch to Optimism
+        </div>
+        to continue
+      </div>
+      <div
         v-else-if="!hasBalance"
         class="fund-prompt"
       >
@@ -53,13 +65,26 @@
 
 <script setup lang="ts">
 import { useIntervalFn } from '@vueuse/core';
-import { useAccount, useClient } from '@wagmi/vue';
+import { useAccount, useClient, useSwitchChain } from '@wagmi/vue';
+import { createWeb3Modal, useWeb3Modal } from '@web3modal/wagmi/vue';
 import { Address } from 'viem';
 import { readContract, getBalance } from 'viem/actions';
+import { optimism } from 'viem/chains';
 import { computed, ref, watch } from 'vue';
 
 import erc20Abi from '@/abi/erc20.js';
+import { projectId } from '@/appKit';
+import { config } from '@/wagmi';
 
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  enableAnalytics: true,
+  enableOnramp: true,
+});
+
+const { open: openModal } = useWeb3Modal();
+const { chains, switchChain: switchAccountChain } = useSwitchChain();
 const account = useAccount();
 const client = useClient();
 
@@ -67,7 +92,22 @@ const USDC: Address = '0x7f5c764cbc14f9669b88837ca1490cca17c31607';
 
 function open(): void {
   console.log('open modal');
+  openModal();
 }
+
+function switchChain(): void {
+  console.log('switch chain', chains);
+  switchAccountChain({
+    chainId: optimism.id,
+  });
+}
+
+const wrongChain = computed(() => {
+  if (!account.chainId.value) {
+    return false;
+  }
+  return account.chainId.value !== optimism.id;
+});
 
 const ethBalance = ref<bigint | null>(null);
 const usdcBalance = ref<bigint | null>(null);
@@ -159,6 +199,7 @@ h2 {
   font-weight: 400;
 }
 
+.chain-prompt,
 .fund-prompt,
 .connect-prompt {
   display: flex;
@@ -176,6 +217,11 @@ h2 {
 .button-connect {
   border-color: #5773ff;
   color: #5773ff;
+}
+
+.button-chain {
+  border-color: #ff0421;
+  color: #ff0421;
 }
 
 .button-buy {
