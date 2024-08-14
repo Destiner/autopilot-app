@@ -8,6 +8,20 @@ const config = defaultWagmiConfig({
   chains: [optimism],
   projectId,
   metadata,
+  auth: {
+    email: true,
+    socials: [
+      'google',
+      'x',
+      'github',
+      'discord',
+      'apple',
+      'facebook',
+      'farcaster',
+    ],
+    showWallets: true,
+    walletFeatures: true, // default to true
+  },
 });
 
 export { chains, config };
