@@ -13,6 +13,7 @@ import AppHeader from '@/components/_app/AppHeader.vue';
 import { config } from '@/wagmi';
 
 createWeb3Modal({
+  themeMode: 'light',
   wagmiConfig: config,
   projectId,
   enableAnalytics: true,
