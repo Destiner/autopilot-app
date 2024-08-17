@@ -146,7 +146,7 @@
         class="swap-view"
       >
         <h2>Gradual Swap</h2>
-        TODO
+        <GradualSwap />
         <button @click="swapType = null">Go back</button>
       </div>
     </div>
@@ -158,12 +158,13 @@ import { useIntervalFn } from '@vueuse/core';
 import { useAccount, useClient, useSwitchChain } from '@wagmi/vue';
 import { createWeb3Modal, useWeb3Modal } from '@web3modal/wagmi/vue';
 import { Address, Hex, size } from 'viem';
-import { readContract, getBalance, getCode } from 'viem/actions';
+import { getBalance, getCode, readContract } from 'viem/actions';
 import { optimism } from 'viem/chains';
 import { computed, ref, watch } from 'vue';
 
 import erc20Abi from '@/abi/erc20.js';
 import { projectId } from '@/appKit';
+import GradualSwap from '@/components/GradualSwap.vue';
 import { config } from '@/wagmi';
 
 type SwapType = 'instant' | 'gradual';
@@ -181,7 +182,7 @@ const { chains, switchChain: switchAccountChain } = useSwitchChain();
 const account = useAccount();
 const client = useClient();
 
-const USDC: Address = '0x7f5c764cbc14f9669b88837ca1490cca17c31607';
+const USDC: Address = '0x0b2c639c533813f4aa9d7837caf62653d097ff85';
 
 function open(): void {
   console.log('open modal');
@@ -233,7 +234,7 @@ async function fetchCode(): Promise<void> {
 }
 
 const ethBalance = ref<bigint | null>(null);
-const usdcBalance = ref<bigint | null>(null);
+const usdcBalance = ref<bigint | null>(0n);
 const hasBalance = computed(
   () => ethBalance.value !== null && usdcBalance.value !== null,
 );
