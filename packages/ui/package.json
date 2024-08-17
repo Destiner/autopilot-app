@@ -20,8 +20,10 @@
   "dependencies": {
     "@tanstack/vue-query": "^5.51.21",
     "@vueuse/core": "^10.11.1",
+    "@wagmi/core": "^2.13.4",
     "@wagmi/vue": "^0.0.37",
     "@web3modal/wagmi": "^5.0.11",
+    "permissionless": "^0.1.44",
     "viem": "^2.19.4",
     "vue": "^3.4.19",
     "vue-router": "^4.3.0"
