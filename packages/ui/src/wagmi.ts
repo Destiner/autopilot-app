@@ -3,9 +3,9 @@ import { optimism } from 'viem/chains';
 
 import { projectId, metadata } from '@/appKit.js';
 
-const chains = [optimism];
+const CHAIN = optimism;
 const config = defaultWagmiConfig({
-  chains: [optimism],
+  chains: [CHAIN],
   projectId,
   metadata,
   auth: {
@@ -16,4 +16,4 @@ const config = defaultWagmiConfig({
   },
 });
 
-export { chains, config };
+export { CHAIN, config };
