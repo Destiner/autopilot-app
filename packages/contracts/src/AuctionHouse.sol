@@ -96,14 +96,14 @@ contract AuctionHouse {
             auction.halvingBlocks,
             auction.auctionBlocks
         );
-        auctionData[msg.sender][id].swapAmount -= amountOut;
+        auctionData[owner][id].swapAmount -= amountOut;
 
         // transfer the tokens
-        IERC20(auction.tokenOut).transferFrom(swapper, msg.sender, amountOut);
+        IERC20(auction.tokenOut).transferFrom(swapper, owner, amountOut);
         IERC20(auction.tokenIn).transfer(swapper, amountIn);
 
         // emit the AuctionSwap event
-        emit AuctionSwap(msg.sender, id, swapper, amountIn, amountOut);
+        emit AuctionSwap(owner, id, swapper, amountIn, amountOut);
     }
 
     function _calculateAmountOut(
