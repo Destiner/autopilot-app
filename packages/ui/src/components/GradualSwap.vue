@@ -3,7 +3,7 @@
     <div class="input-wrapper">
       <div class="input">
         <input v-model="amountString" />
-        USDC
+        ETH -> OP
       </div>
     </div>
     <button @click="swap">Swap</button>
@@ -13,12 +13,13 @@
 <script setup lang="ts">
 import { getCapabilities, sendCalls } from '@wagmi/core/experimental';
 import { useAccount, useClient } from '@wagmi/vue';
-import { encodeFunctionData, Hex, parseEther, parseUnits } from 'viem';
+import { encodeFunctionData, Hex, parseEther } from 'viem';
 import { getCode } from 'viem/actions';
 import { ref, watchEffect } from 'vue';
 
 import auctionHouseAbi from '@/abi/auctionHouse.js';
 import erc20Abi from '@/abi/erc20.js';
+import wethAbi from '@/abi/weth.js';
 import { CHAIN, config } from '@/wagmi';
 
 const account = useAccount();
@@ -50,7 +51,7 @@ watchEffect(() => {
 });
 
 const WETH = '0x4200000000000000000000000000000000000006';
-const USDC = '0x0b2c639c533813f4aa9d7837caf62653d097ff85';
+const OP = '0x4200000000000000000000000000000000000042';
 
 const amountString = ref<string>('');
 
@@ -78,11 +79,19 @@ async function swap(): Promise<void> {
   const callId = await sendCalls(config, {
     calls: [
       {
-        to: USDC,
+        to: WETH,
+        data: encodeFunctionData({
+          abi: wethAbi,
+          functionName: 'deposit',
+        }),
+        value: parseEther(amountString.value),
+      },
+      {
+        to: WETH,
         data: encodeFunctionData({
           abi: erc20Abi,
           functionName: 'approve',
-          args: [auctionHouseAddress, parseUnits(amountString.value, 6)],
+          args: [auctionHouseAddress, parseEther(amountString.value)],
         }),
       },
       {
@@ -92,12 +101,12 @@ async function swap(): Promise<void> {
           functionName: 'createOrder',
           args: [
             id,
-            USDC,
             WETH,
-            parseUnits(amountString.value, 6),
+            OP,
+            parseEther(amountString.value),
             100n,
             50n,
-            parseEther('1'),
+            parseEther('10'),
           ],
         }),
       },
