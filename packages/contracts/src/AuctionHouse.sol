@@ -69,6 +69,39 @@ contract AuctionHouse {
         emit AuctionStart(msg.sender, id, block.timestamp);
     }
 
+    function getAmountOut(
+        address owner,
+        uint256 id,
+        uint256 amountIn
+    )
+        public
+        view
+        returns (uint256 amountOut)
+    {
+        // get the auction data
+        AuctionData storage auction = auctionData[owner][id];
+
+        // check if the auction is active
+        if (
+            block.number < auction.blockStart
+                || block.number > auction.blockStart + auction.auctionBlocks
+        ) {
+            revert Inactive();
+        }
+
+        // get the amount of tokenOut to be swapped
+        amountOut = _calculateAmountOut(
+            amountIn,
+            auction.swapAmount,
+            auction.amountInTotal,
+            block.number,
+            auction.blockStart,
+            auction.initialPrice,
+            auction.halvingBlocks,
+            auction.auctionBlocks
+        );
+    }
+
     function swap(address swapper, address owner, uint256 id, uint256 amountIn) external {
         // get the auction data
         AuctionData storage auction = auctionData[owner][id];
