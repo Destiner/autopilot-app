@@ -193,6 +193,35 @@ const abi = [
     inputs: [
       {
         internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'id',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'amountIn',
+        type: 'uint256',
+      },
+    ],
+    name: 'getAmountOut',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'amountOut',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: 'swapper',
         type: 'address',
       },

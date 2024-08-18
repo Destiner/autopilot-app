@@ -24,7 +24,7 @@ import { CHAIN, config } from '@/wagmi';
 const account = useAccount();
 const client = useClient();
 
-const auctionHouseAddress = '0x69f9EeC0fc29e7BF65f66B2593dd66fdf266FEfE';
+const auctionHouseAddress = '0x0560e40aEcC81b6DAd43Fdca93F0800a5B7bf89E';
 
 const addressCode = ref<Hex | null>(null);
 async function fetchCode(): Promise<void> {
